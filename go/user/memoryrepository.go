@@ -33,8 +33,8 @@ func (mr MemoryRepository) GetUser(ctx context.Context, userID id.ID) (*User, er
 
 // AddUser appends a new user record. Returns an error if `user.UserID` already exists
 func (mr *MemoryRepository) AddUser(ctx context.Context, user User) error {
-	for _, user := range mr.users {
-		if user.UserID == user.UserID {
+	for _, u := range mr.users {
+		if u.UserID == user.UserID {
 			return errors.New("user already exists")
 		}
 	}
