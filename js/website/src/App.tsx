@@ -3,7 +3,7 @@ import "./App.css";
 
 const App = () => {
   return (
-    <div className="App">
+    <div className="App bg-blue-500">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
