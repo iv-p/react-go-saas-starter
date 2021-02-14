@@ -3,19 +3,25 @@ package main
 import (
 	userc "github.com/iv-p/react-go-saas-starter/svc/api/user"
 	"github.com/iv-p/react-go-saas-starter/user"
-	"github.com/kataras/iris/v12"
+
+	"net/http"
+
+	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/middleware"
 )
 
 func main() {
 	userRepository := user.NewMemoryRepository()
 	userService := user.NewService(userRepository)
-	userController := userc.NewController(userService)
+	userRouter := userc.NewController(userService)
 
-	app := iris.New()
+	r := chi.NewRouter()
+	r.Use(middleware.RequestID)
+	r.Use(middleware.RealIP)
+	r.Use(middleware.Logger)
+	r.Use(middleware.Recoverer)
 
-	app.Post("/user", userController.AddUser)
-	app.Get("/user/:userID", userController.GetUser)
-	app.Put("/user/:userID/name", userController.UpdateName)
+	r.Mount("/user", userRouter)
 
-	app.Listen(":8080")
+	http.ListenAndServe(":8080", r)
 }

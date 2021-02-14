@@ -1,8 +1,12 @@
 package controller
 
 import (
+	"net/http"
+
+	"github.com/go-chi/chi"
+	"github.com/go-chi/render"
+
 	"github.com/iv-p/react-go-saas-starter/user"
-	"github.com/kataras/iris/v12"
 )
 
 // Controller is the entrypoint of the user related endpoibts
@@ -11,26 +15,31 @@ type Controller struct {
 }
 
 // NewController instantiates a new user controller
-func NewController(userService user.Service) Controller {
-	return Controller{userService}
+func NewController(userService user.Service) chi.Router {
+	c := Controller{userService}
+	r := chi.NewRouter()
+
+	r.Post("/", c.AddUser)
+	r.Get("/{userID}", c.GetUser)
+	r.Put("/{userID}/name", c.UpdateName)
+
+	return r
 }
 
 // GetUser returns a user based on the provided `userID`
-func (c Controller) GetUser(ctx iris.Context) {
-	userID := ctx.Params().Get("userID")
-	user, err := c.userService.GetUser(ctx.Request().Context(), userID)
+func (c Controller) GetUser(w http.ResponseWriter, r *http.Request) {
+	userID := chi.URLParam(r, "userID")
+	user, err := c.userService.GetUser(r.Context(), userID)
 	if err != nil {
-		ctx.StopWithProblem(iris.StatusInternalServerError, iris.NewProblem().
-			Title("Could not fetch user").DetailErr(err))
+		http.Error(w, "could not fetch user", http.StatusInternalServerError)
 		return
 	}
 
 	if user == nil {
-		ctx.StatusCode(404)
+		http.Error(w, "user not found", http.StatusNotFound)
 		return
 	}
-
-	ctx.JSON(user)
+	render.JSON(w, r, user)
 }
 
 // AddUserRequest holds necessary data for new user creation
@@ -38,19 +47,25 @@ type AddUserRequest struct {
 	Name string `json:"name"`
 }
 
-// AddUser creates a new user
-func (c Controller) AddUser(ctx iris.Context) {
-	var request UpdateNameRequest
-	err := ctx.ReadJSON(&request)
+func (a *AddUserRequest) Bind(r *http.Request) error {
+	return nil
+}
 
-	user, err := c.userService.AddUser(ctx.Request().Context(), user.AddUserRequest(request))
-	if err != nil {
-		ctx.StopWithProblem(iris.StatusInternalServerError, iris.NewProblem().
-			Title("Could not add user").DetailErr(err))
+// AddUser creates a new user
+func (c Controller) AddUser(w http.ResponseWriter, r *http.Request) {
+	request := &AddUserRequest{}
+	if err := render.Bind(r, request); err != nil {
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
 
-	ctx.JSON(user)
+	user, err := c.userService.AddUser(r.Context(), user.AddUserRequest(*request))
+	if err != nil {
+		http.Error(w, "could not add user", http.StatusInternalServerError)
+		return
+	}
+
+	render.JSON(w, r, user)
 }
 
 // UpdateNameRequest holds necessary data for updating the name of a user
@@ -58,20 +73,22 @@ type UpdateNameRequest struct {
 	Name string `json:"name"`
 }
 
+func (a *UpdateNameRequest) Bind(r *http.Request) error {
+	return nil
+}
+
 // UpdateName changes the name of a user if found
-func (c Controller) UpdateName(ctx iris.Context) {
-	userID := ctx.Params().Get("userID")
-	var request UpdateNameRequest
-	err := ctx.ReadJSON(&request)
-	if err != nil || len(request.Name) < 2 {
-		ctx.StatusCode(iris.StatusBadRequest)
+func (c Controller) UpdateName(w http.ResponseWriter, r *http.Request) {
+	userID := chi.URLParam(r, "userID")
+	request := &UpdateNameRequest{}
+	if err := render.Bind(r, request); err != nil {
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
 
-	err = c.userService.UpdateName(ctx.Request().Context(), userID, request.Name)
+	err := c.userService.UpdateName(r.Context(), userID, request.Name)
 	if err != nil {
-		ctx.StopWithProblem(iris.StatusInternalServerError, iris.NewProblem().
-			Title("Could not fetch user").DetailErr(err))
+		http.Error(w, "could not update user", http.StatusInternalServerError)
 		return
 	}
 }
