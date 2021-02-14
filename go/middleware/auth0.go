@@ -75,14 +75,7 @@ func (a Auth0Authenticator) Protect(next http.Handler) http.Handler {
 			return
 		}
 
-		claims := token.Claims.(jwt.MapClaims)
-
-		checkAud := claims.VerifyAudience(a.Audience, false)
-		if !checkAud {
-			http.Error(w, "invalid audience", 401)
-			return
-		}
-		checkIss := claims.VerifyIssuer(a.Domain, false)
+		checkIss := token.Claims.(jwt.MapClaims).VerifyIssuer(a.Domain, false)
 		if !checkIss {
 			http.Error(w, "invalid issuer", 401)
 			return
