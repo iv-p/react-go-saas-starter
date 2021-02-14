@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/caarlos0/env"
 	"github.com/iv-p/react-go-saas-starter/config"
 	mw "github.com/iv-p/react-go-saas-starter/middleware"
@@ -34,5 +36,5 @@ func main() {
 	r.Use(auth.Protect)
 	r.Mount("/user", userRouter)
 
-	http.ListenAndServe(":8080", r)
+	http.ListenAndServe(fmt.Sprintf(":%d", c.Port), r)
 }
