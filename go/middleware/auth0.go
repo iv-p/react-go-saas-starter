@@ -12,8 +12,7 @@ import (
 
 // Auth0Authenticator provides middleware that auths using auth0 / authorization header JWT
 type Auth0Authenticator struct {
-	Domain   string
-	Audience string
+	Domain string
 }
 
 // Jwks = json web key set
@@ -33,8 +32,8 @@ type JSONWebKey struct {
 
 // NewAuth0Authenticator with the provided params. Domain needs to include
 // `https://` and a trailing slash
-func NewAuth0Authenticator(domain, audience string) Auth0Authenticator {
-	return Auth0Authenticator{Domain: domain, Audience: audience}
+func NewAuth0Authenticator(domain string) Auth0Authenticator {
+	return Auth0Authenticator{Domain: domain}
 }
 
 func (a Auth0Authenticator) getPemCert(token *jwt.Token) (interface{}, error) {

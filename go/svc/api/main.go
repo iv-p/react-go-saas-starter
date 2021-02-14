@@ -19,7 +19,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	auth := mw.NewAuth0Authenticator(c.Auth0Domain, c.Auth0Audience)
+	auth := mw.NewAuth0Authenticator(c.Auth0Domain)
 
 	userRepository := user.NewMemoryRepository()
 	userService := user.NewService(userRepository)
