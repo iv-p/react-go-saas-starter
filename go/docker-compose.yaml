@@ -1,0 +1,12 @@
+version: "3"
+
+services:
+  api:
+    image: ghcr.io/react-go-saas-starter/api:latest
+    build:
+      context: .
+      dockerfile: svc/api/dockerfile
+    env_file:
+      - svc/api/.env
+    ports:
+      - 8080:80
