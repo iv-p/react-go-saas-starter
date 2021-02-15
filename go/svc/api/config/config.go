@@ -4,7 +4,7 @@ package config
 type Config struct {
 	AppName    string `env:"APP_NAME"`
 	AppVersion string `env:"APP_VERSION" envDefault:"dev"`
-	Port       int    `env:"port" envDefault:"80"`
+	Port       int    `env:"APP_PORT" envDefault:"8080"`
 
 	Auth0Domain string `env:"AUTH0_DOMAIN"`
 }

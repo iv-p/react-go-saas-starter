@@ -1,0 +1,70 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library", "go_test")
+load("@io_bazel_rules_docker//go:image.bzl", "go_image")
+load("@io_bazel_rules_docker//container:container.bzl", "container_image", "container_push")
+
+go_library(
+    name = "api_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/iv-p/react-go-saas-starter/svc/api",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//go/middleware",
+        "//go/svc/api/config",
+        "//go/svc/api/user",
+        "//go/user",
+        "@com_github_caarlos0_env//:env",
+        "@com_github_go_chi_chi//:chi",
+        "@com_github_go_chi_chi//middleware",
+    ],
+)
+
+go_test(
+    name = "tests",
+    srcs = glob([
+        "*_test.go",
+    ]),
+    embed = [":api_lib"],
+)
+
+go_binary(
+    name = "api",
+    embed = [":api_lib"],
+    visibility = ["//visibility:public"],
+)
+
+container_image(
+    name = "base_image",
+    env = {
+        "APP_PORT": "80",
+    },
+    ports = [
+        "80",
+    ],
+    stamp = True,
+    visibility = ["//visibility:public"],
+)
+
+go_image(
+    name = "image",
+    base = ":base_image",
+    embed = [":api_lib"],
+    goarch = "amd64",
+    goos = "linux",
+    pure = "on",
+    visibility = ["//visibility:public"],
+)
+
+container_push(
+    name = "push_image",
+    format = "Docker",
+    image = ":image",
+    registry = "ghcr.io",
+    repository = "iv-p/react-go-saas-starter/api",
+    tag = "dev",
+)
+
+go_test(
+    name = "api_test",
+    srcs = ["main_test.go"],
+    embed = [":api_lib"],
+)

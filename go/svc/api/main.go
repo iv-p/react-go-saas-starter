@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/caarlos0/env"
-	"github.com/iv-p/react-go-saas-starter/config"
 	mw "github.com/iv-p/react-go-saas-starter/middleware"
+	"github.com/iv-p/react-go-saas-starter/svc/api/config"
 	userc "github.com/iv-p/react-go-saas-starter/svc/api/user"
 	"github.com/iv-p/react-go-saas-starter/user"
 
@@ -36,5 +36,6 @@ func main() {
 	r.Use(auth.Protect)
 	r.Mount("/user", userRouter)
 
+	fmt.Println("Starting api")
 	http.ListenAndServe(fmt.Sprintf(":%d", c.Port), r)
 }

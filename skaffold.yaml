@@ -1,0 +1,17 @@
+apiVersion: skaffold/v2beta12
+kind: Config
+build:
+  artifacts:
+    - image: ghcr.io/iv-p/react-go-saas-starter/api
+      bazel:
+        target: //go/svc/api:image.tar
+deploy:
+  kustomize:
+    paths:
+      - "go/svc/api/k8s/overlays/dev"
+profiles:
+  - name: staging
+    deploy:
+      kustomize:
+        paths:
+          - "go/svc/api/k8s/overlays/staging"
