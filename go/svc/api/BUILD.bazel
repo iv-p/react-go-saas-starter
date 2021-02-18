@@ -1,6 +1,6 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library", "go_test")
 load("@io_bazel_rules_docker//go:image.bzl", "go_image")
-load("@io_bazel_rules_docker//container:container.bzl", "container_image", "container_push")
+load("@io_bazel_rules_docker//container:container.bzl", "container_image")
 
 go_library(
     name = "api_lib",
@@ -15,6 +15,8 @@ go_library(
         "@com_github_caarlos0_env//:env",
         "@com_github_go_chi_chi//:chi",
         "@com_github_go_chi_chi//middleware",
+        "@io_gorm_driver_postgres//:postgres",
+        "@io_gorm_gorm//:gorm",
     ],
 )
 
@@ -52,15 +54,6 @@ go_image(
     goos = "linux",
     pure = "on",
     visibility = ["//visibility:public"],
-)
-
-container_push(
-    name = "push_image",
-    format = "Docker",
-    image = ":image",
-    registry = "ghcr.io",
-    repository = "iv-p/react-go-saas-starter/api",
-    tag = "dev",
 )
 
 go_test(

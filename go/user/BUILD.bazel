@@ -4,11 +4,15 @@ go_library(
     name = "user",
     srcs = [
         "memoryrepository.go",
+        "postgresrepository.go",
         "repository.go",
         "service.go",
         "user.go",
     ],
     importpath = "github.com/iv-p/react-go-saas-starter/user",
     visibility = ["//visibility:public"],
-    deps = ["//go/id"],
+    deps = [
+        "//go/id",
+        "@io_gorm_gorm//:gorm",
+    ],
 )

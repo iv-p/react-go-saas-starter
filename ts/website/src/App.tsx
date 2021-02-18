@@ -1,6 +1,6 @@
-import Router from "Router";
+import Router from "./Router";
 import { Auth0Provider } from "@auth0/auth0-react";
-import config from "config";
+import config from "./config";
 
 const App = () => {
   return (

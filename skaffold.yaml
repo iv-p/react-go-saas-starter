@@ -5,13 +5,19 @@ build:
     - image: ghcr.io/iv-p/react-go-saas-starter/api
       bazel:
         target: //go/svc/api:image.tar
+    - image: ghcr.io/iv-p/react-go-saas-starter/web
+      bazel:
+        target: //ts/website:image.tar
 deploy:
   kustomize:
     paths:
+      - "third-party/postgres/k8s/overlays/dev"
       - "go/svc/api/k8s/overlays/dev"
+      - "ts/website/k8s/overlays/dev"
 profiles:
   - name: staging
     deploy:
       kustomize:
         paths:
           - "go/svc/api/k8s/overlays/staging"
+          - "ts/website/k8s/overlays/staging"

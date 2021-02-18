@@ -1,3 +1,4 @@
 bin/
 .env
 bazel-*
+node_modules

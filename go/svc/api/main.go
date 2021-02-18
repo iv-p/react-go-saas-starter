@@ -8,6 +8,8 @@ import (
 	"github.com/iv-p/react-go-saas-starter/svc/api/config"
 	userc "github.com/iv-p/react-go-saas-starter/svc/api/user"
 	"github.com/iv-p/react-go-saas-starter/user"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 
 	"net/http"
 
@@ -23,7 +25,14 @@ func main() {
 	}
 	auth := mw.NewAuth0Authenticator(c.Auth0Domain)
 
-	userRepository := user.NewMemoryRepository()
+	db, _ := gorm.Open(
+		postgres.Open(
+			fmt.Sprintf("host=postgres-dev user=postgresadmin password=admin123 dbname=postgresdb port=5432 sslmode=disable"),
+		),
+		&gorm.Config{},
+	)
+
+	userRepository := user.NewPostgresRepository(db)
 	userService := user.NewService(userRepository)
 	userRouter := userc.NewController(userService)
 

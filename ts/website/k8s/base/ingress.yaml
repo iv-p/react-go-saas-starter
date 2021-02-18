@@ -1,16 +1,16 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: api
+  name: web
 spec:
   rules:
-    - host: "api.service.local"
+    - host: "service.local"
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: api-svc-dev
+                name: web-svc-dev
                 port:
                   number: 80

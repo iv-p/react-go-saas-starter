@@ -1,0 +1,10 @@
+{
+  "extends": ["react-app", "google"],
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "paths": ["src"]
+      }
+    }
+  }
+}

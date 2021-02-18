@@ -1,3 +1,8 @@
+workspace(
+    name = "react-go-saas-starter",
+    managed_directories = {"@npm": ["node_modules"]},
+)
+
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 http_archive(
@@ -52,3 +57,28 @@ load(
 )
 
 _go_image_repos()
+
+load("@io_bazel_rules_docker//container:container.bzl", "container_pull")
+
+container_pull(
+    name = "nginx_stable",
+    registry = "index.docker.io",
+    repository = "nginx",
+    tag = "stable-alpine",
+)
+
+http_archive(
+    name = "build_bazel_rules_nodejs",
+    sha256 = "fcc6dccb39ca88d481224536eb8f9fa754619676c6163f87aa6af94059b02b12",
+    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/3.2.0/rules_nodejs-3.2.0.tar.gz"],
+)
+
+load("@build_bazel_rules_nodejs//:index.bzl", "node_repositories", "yarn_install")
+
+node_repositories(package_json = ["//ts:package.json"])
+
+yarn_install(
+    name = "npm",
+    package_json = "//ts:package.json",
+    yarn_lock = "//ts:yarn.lock",
+)
