@@ -1,4 +1,5 @@
-import { BrowserRouter, Switch, Route } from "react-router-dom";
+import { MemoryRouter, Switch, Route } from "react-router-dom";
+import { createMemoryHistory } from "history";
 
 import Header from "./components/nav/Header";
 
@@ -6,8 +7,11 @@ import HomePage from "./pages/HomePage";
 import AboutPage from "./pages/AboutPage";
 
 const Router = () => {
+  const history = createMemoryHistory();
+
   return (
-    <BrowserRouter>
+    // This needs to be changed!
+    <MemoryRouter>
       <Header />
       <Switch>
         <Route path="/about">
@@ -17,7 +21,7 @@ const Router = () => {
           <HomePage />
         </Route>
       </Switch>
-    </BrowserRouter>
+    </MemoryRouter>
   );
 };
 

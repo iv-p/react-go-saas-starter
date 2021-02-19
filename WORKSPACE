@@ -61,10 +61,10 @@ _go_image_repos()
 load("@io_bazel_rules_docker//container:container.bzl", "container_pull")
 
 container_pull(
-    name = "nginx_stable",
+    name = "node15",
     registry = "index.docker.io",
-    repository = "nginx",
-    tag = "stable-alpine",
+    repository = "node",
+    tag = "15-alpine",
 )
 
 http_archive(
