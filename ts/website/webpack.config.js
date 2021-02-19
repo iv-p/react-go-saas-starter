@@ -3,6 +3,7 @@ const path = require("path");
 const glob = require("glob");
 
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const { ESBuildPlugin, ESBuildMinifyPlugin } = require("esbuild-loader");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
@@ -11,6 +12,11 @@ const CopyPlugin = require("copy-webpack-plugin");
 
 const clientConfig = {
   entry: path.resolve(__dirname, "src/client.tsx"),
+  output: {
+    chunkFilename: "[name].[contenthash].js",
+    filename: "[name].[contenthash].js",
+    assetModuleFilename: "[name].[contenthash][ext][query]",
+  },
   module: {
     rules: [
       {
@@ -25,6 +31,10 @@ const clientConfig = {
           loader: "tsx",
           target: "es2015",
         },
+      },
+      {
+        test: /\.(png|svg|jpg|jpeg|gif|ico|json)$/i,
+        type: "asset/resource",
       },
     ],
   },
@@ -67,17 +77,9 @@ const clientConfig = {
     extensions: [".tsx", ".ts", ".js", ".jsx", ".json", "css"],
   },
   plugins: [
-    new CopyPlugin({
-      patterns: [
-        {
-          from: path.resolve(__dirname, "public"),
-          to: path.resolve(__dirname, "dist"),
-        },
-      ],
-    }),
     new ESBuildPlugin(),
     new MiniCssExtractPlugin({
-      filename: "[name].css",
+      filename: "[name].[contenthash].css",
     }),
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, "public", "index.html"),

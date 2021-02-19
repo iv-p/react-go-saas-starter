@@ -11,12 +11,7 @@ const indexHTML = fs.readFileSync(path.resolve(__dirname, "index.html"), {
   encoding: "utf8",
 });
 
-app.use(
-  /\.(js|css|map|ico|jpe?g|png)$/,
-  express.static(path.resolve(__dirname, "."))
-);
-
-app.get("*", (req, res) => {
+const handler = (req, res) => {
   let appHTML = renderToString(<App />);
 
   const html = indexHTML.replace(
@@ -28,7 +23,12 @@ app.get("*", (req, res) => {
   res.status(200);
 
   return res.send(html);
-});
+};
+app.get(["index.html", "/"], handler);
+
+app.use(express.static(path.resolve(__dirname, ".")));
+
+app.get("*", handler);
 
 app.listen("80", () => {
   console.log("Express server started at http://localhost:80");
